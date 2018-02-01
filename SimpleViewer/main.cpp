@@ -21,14 +21,15 @@ bool loadOBJ(
 
 int main(int argc, char* argv[]) {
 
+	std::string model = (argc > 1) ? argv[1] : "cube.obj";
 	int screenWidth = 640;
 	int screenHeight = 480;
 
 	SDL_Window *window;
 	SDL_GLContext context;
-	GLuint programID;
-
-	std::string model = (argc > 1) ? argv[1] : "cube.obj";
+	GLuint programID; // Shader program
+	GLuint vertexbuffer; // VAO for model
+	GLuint matrixID; // MVP matrix in shader
 
 	// Use OpenGL 3.3 core
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
@@ -53,8 +54,7 @@ int main(int argc, char* argv[]) {
 
 	// Load shaders
 	programID = LoadShaders("shader.vert", "shader.frag");
-	glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
-
+	matrixID = glGetUniformLocation(programID, "MVP");
 
 	// Enable depth test
 	glEnable(GL_DEPTH_TEST);
@@ -63,12 +63,7 @@ int main(int argc, char* argv[]) {
 	// Cull triangles which normal is not towards the camera
 	glEnable(GL_CULL_FACE);
 
-	GLuint VertexArrayID;
-	GLuint MatrixID = glGetUniformLocation(programID, "MVP");
-
-	// glGenVertexArrays(1, &VertexArrayID);
-	// glBindVertexArray(VertexArrayID);
-	
+	glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
 
 	// Read .obj file
 	std::vector<glm::vec3> vertices;
@@ -77,8 +72,7 @@ int main(int argc, char* argv[]) {
 	if (!loadOBJ("models/" + model, vertices, uvs, normals)) {
 		printf("Error loading model!");
 	}
-
-	GLuint vertexbuffer;
+	
 	glGenBuffers(1, &vertexbuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
 	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(glm::vec3), &vertices[0], GL_STATIC_DRAW);
@@ -107,7 +101,7 @@ int main(int argc, char* argv[]) {
 		}
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glUseProgram(programID);
-		glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
+		glUniformMatrix4fv(matrixID, 1, GL_FALSE, &MVP[0][0]);
 		render(vertexbuffer, vertices.size());
 		glUseProgram(NULL);
 		SDL_GL_SwapWindow(window);
@@ -185,7 +179,6 @@ bool loadOBJ(
 
 void render(GLuint vertexbuffer, int vertices) {
 
-	// 1st attribute buffer : vertices
 	glEnableVertexAttribArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
 	glVertexAttribPointer(
