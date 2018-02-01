@@ -1,2 +1,3 @@
 ﻿  main.cpp
+d:\work\simpleviewer\simpleviewer\simpleviewer\main.cpp(66): warning C4101: 'VertexArrayID': unreferenced local variable
   SimpleViewer.vcxproj -> D:\Work\SimpleViewer\SimpleViewer\Debug\SimpleViewer.exe

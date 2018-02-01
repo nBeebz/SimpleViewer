@@ -1,3 +1,4 @@
+// http://www.opengl-tutorial.org/beginners-tutorials/tutorial-7-model-loading/
 #version 330 core
 
 // Input vertex data, different for all executions of this shader.

@@ -34,7 +34,6 @@ int main(int argc, char* argv[]) {
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
 
-	// Create OpenGL window
 	window = SDL_CreateWindow("Model Viewer", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
 		screenWidth, screenHeight, SDL_WINDOW_OPENGL);
 	context = SDL_GL_CreateContext(window);
@@ -67,8 +66,8 @@ int main(int argc, char* argv[]) {
 	GLuint VertexArrayID;
 	GLuint MatrixID = glGetUniformLocation(programID, "MVP");
 
-	glGenVertexArrays(1, &VertexArrayID);
-	glBindVertexArray(VertexArrayID);
+	// glGenVertexArrays(1, &VertexArrayID);
+	// glBindVertexArray(VertexArrayID);
 	
 
 	// Read .obj file
@@ -108,8 +107,6 @@ int main(int argc, char* argv[]) {
 		}
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glUseProgram(programID);
-		// Send our transformation to the currently bound shader, 
-		// in the "MVP" uniform
 		glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
 		render(vertexbuffer, vertices.size());
 		glUseProgram(NULL);
@@ -118,7 +115,8 @@ int main(int argc, char* argv[]) {
 
 	return 0;
 }
-
+// http://www.opengl-tutorial.org/beginners-tutorials/tutorial-7-model-loading/
+// Modified to index vertices while reading the file
 bool loadOBJ(
 	std::string path,
 	std::vector < glm::vec3 > & out_vertices,
@@ -177,6 +175,7 @@ bool loadOBJ(
 		}
 	}
 
+	// Move semantics?
 	out_vertices = std::move(vertices);
 	out_uvs = std::move(uvs);
 	out_normals = std::move(normals);
